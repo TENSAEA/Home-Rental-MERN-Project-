@@ -29,4 +29,9 @@ const houseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add a method to the houseSchema for checking availability if it doesn't exist
+houseSchema.methods.isAvailable = function () {
+  return this.status === "available";
+};
+
 module.exports = mongoose.model("House", houseSchema);

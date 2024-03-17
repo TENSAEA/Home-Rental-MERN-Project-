@@ -1,11 +1,49 @@
 const express = require("express");
 const router = express.Router();
-const bookingController = require("../controllers/bookingController");
+const { renterOnly } = require("../middleware/authMiddleware");
+const pendingOrderController = require("../controllers/pendingOrderController");
 
-// Rename to pendingOrderRoute.js and update the controller accordingly
-router.post("/pending-orders", pendingOrderController.create);
-router.get("/pending-orders/:id", pendingOrderController.show);
-router.put("/pending-orders/:id", pendingOrderController.update);
-router.delete("/pending-orders/:id", pendingOrderController.cancel);
+router.post(
+  "/pending-orders",
+  renterOnly,
+  pendingOrderController.createPendingOrder
+);
+router.put(
+  "/pending-orders/:id",
+  renterOnly,
+  pendingOrderController.updatePendingOrder
+);
+router.delete(
+  "/pending-orders/:id",
+  renterOnly,
+  pendingOrderController.deletePendingOrder
+);
+router.get(
+  "/pending-orders/:id",
+  renterOnly,
+  pendingOrderController.getPendingOrder
+);
+router.get(
+  "/landlord/:landlordId/pending-orders",
+  renterOnly,
+  pendingOrderController.getAllPendingOrdersForLandlord
+);
 
+router.post(
+  "/pending-orders/:id/accept",
+  renterOnly,
+  pendingOrderController.acceptPendingOrder
+);
+router.post(
+  "/pending-orders/:id/reject",
+  renterOnly,
+  pendingOrderController.rejectPendingOrder
+);
+router.post(
+  "/pending-orders/:id/counter-offer",
+  renterOnly,
+  pendingOrderController.counterOfferPendingOrder
+);
+
+// ... (other routes)
 module.exports = router;

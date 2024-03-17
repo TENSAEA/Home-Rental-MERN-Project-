@@ -13,6 +13,11 @@ const pendingOrderSchema = new mongoose.Schema(
       required: true,
     },
     bidPrice: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected", "counter-offered"],
+      default: "pending",
+    },
     // Add other relevant pending order details here
   },
   { timestamps: true }
