@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema(
     },
     isBlocked: { type: Boolean, default: false },
     image: { type: String, required: false },
-    // Add other relevant user details here
   },
   { timestamps: true }
 );
