@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const unavailableDateSchema = new mongoose.Schema(
+  {
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
+  },
+  { _id: false }
+);
+
 const houseSchema = new mongoose.Schema(
   {
     owner: {
@@ -52,6 +60,7 @@ const houseSchema = new mongoose.Schema(
       enum: ["pending", "approved", "declined"],
       default: "pending",
     },
+    unavailableDates: [unavailableDateSchema],
   },
   { timestamps: true }
 );

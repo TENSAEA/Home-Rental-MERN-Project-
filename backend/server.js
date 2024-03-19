@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Import routes
-// const userRoutes = require("./routes/userRoute");
+const userRoutes = require("./routes/userRoute");
 const propertyRoutes = require("./routes/propertyRoute");
 // const reportRoutes = require("./routes/reportRoute.js");
 // const paymentRoutes = require("./routes/paymentRoute");
@@ -17,8 +17,8 @@ const pendingOrderRoutes = require("./routes/pendingOrderRoute.js");
 app.use(cors()); // Enable cors
 
 // Use routes
-// app.use("/users", userRoutes);
-// app.use("/properties", propertyRoutes);
+app.use("/users", userRoutes);
+app.use("/properties", propertyRoutes);
 app.use("/pending", pendingOrderRoutes);
 // app.use("/reports", reportRoutes);
 // app.use("/payments", paymentRoutes);
