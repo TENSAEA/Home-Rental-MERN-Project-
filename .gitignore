@@ -1,0 +1,13 @@
+# Root .gitignore
+
+# Ignore node_modules in both backend and frontend
+backend/node_modules/
+frontend/node_modules/
+
+# Backend specific ignores
+backend/.env
+backend/logs/
+
+# Frontend specific ignores
+frontend/dist/
+frontend/.env.local
