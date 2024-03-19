@@ -24,27 +24,7 @@ exports.createRentalRequest = async (req, res) => {
   }
 };
 exports.listRentalRequests = async (req, res) => {
-  let requestedHouses;
   try {
-    if (req.user.role === "broker") {
-      requestedHouses = await RentalRequest.find({
-        status: "pending",
-        _id: {
-          $in: House.find({
-            brocker: req.user._id,
-          }).select("_id"),
-        },
-      });
-    } else {
-      requestedHouses = await RentalRequest.find({
-        status: "pending",
-        _id: {
-          $in: House.find({
-            landlord: req.user._id,
-          }).select("_id"),
-        },
-      });
-    }
   } catch (error) {}
 };
 exports.manageRentalRequest = async (req, res) => {};
