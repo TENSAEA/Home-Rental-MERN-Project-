@@ -1,86 +1,51 @@
 const jwt = require("jsonwebtoken");
 const User = require("../model/userModel");
 
-const renterOnly = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (user.role !== "renter") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Not authorized" });
-  }
+const roles = {
+  landlord: "landlord",
+  broker: "broker",
+  tenant: "tenant",
+  admin: "admin",
+  superadmin: "superadmin",
 };
 
-const adminsAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+const authorizedRoles = (...authorized) => {
+  return async (req, res, next) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
 
-    if (user.role !== "admin" || "superadmin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Not authorized" });
-  }
-};
-const superAdminAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+      if (!authorized.includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
 
-    if (user.role !== "superadmin") {
-      return res.status(403).json({ message: "Access denied" });
+      req.user = user;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Not authorized" });
     }
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Not authorized" });
-  }
+  };
 };
-const brockerAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+const tenantOnlyAuth = authorizedRoles(roles.tenant);
+const exceptTenantAuth = authorizedRoles(
+  roles.admin,
+  roles.superadmin,
+  roles.landlord,
+  roles.broker
+);
+const superAdminAuth = authorizedRoles(roles.superadmin);
+const adminOrSuperadminAuth = authorizedRoles(roles.admin, roles.superadmin);
+const landlordAuth = authorizedRoles(roles.landlord);
+const brokerAuth = authorizedRoles(roles.broker);
+const landlordOrBrokerAuth = authorizedRoles(roles.landlord, roles.broker);
 
-    if (user.role !== "broker") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Not authorized" });
-  }
-};
-const landlordAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (user.role !== "landlord") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Not authorized" });
-  }
-};
 module.exports = {
-  renterOnly,
-  adminsAuth,
+  tenantOnlyAuth,
+  adminOrSuperadminAuth,
   landlordAuth,
-  brockerAuth,
+  brokerAuth,
   superAdminAuth,
+  landlordOrBrokerAuth,
+  exceptTenantAuth,
 };

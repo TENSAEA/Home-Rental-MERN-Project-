@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ["renter", "landlord", "broker", "admin", "superadmin"],
+      enum: ["tenant", "landlord", "broker", "admin", "superadmin"],
       required: true,
     },
     isBlocked: { type: Boolean, default: false },

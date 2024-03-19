@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const houseSchema = Joi.object({
-  owner: Joi.string().required(),
+  landlord: Joi.string().required(),
   city: Joi.string().required().messages({
     "any.required": "City is required.",
     "string.empty": "City cannot be empty.",
@@ -61,7 +61,6 @@ const houseSchema = Joi.object({
     "string.empty": "Description cannot be empty.",
   }),
   photos: Joi.array().items(Joi.string()),
-  active: Joi.boolean().default(true),
   status: Joi.string()
     .valid("available", "rented", "unavailable")
     .default("available"),

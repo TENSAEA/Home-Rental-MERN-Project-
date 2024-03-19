@@ -7,12 +7,12 @@ const {
 } = require("../utils/validationHelpers");
 const {
   notifyLandlordNewOrder,
-  notifyRenterOrderStatus,
+  notifyTenantOrderStatus,
 } = require("../utils/notificationSystem");
 
 exports.createPendingOrder = async (req, res) => {
   const { houseId, bidPrice } = req.body;
-  const renterId = req.user._id;
+  const tenantId = req.user._id;
 
   if (!validateBidPrice(bidPrice)) {
     return res.status(400).json({ message: "Invalid bid price format" });
@@ -25,7 +25,7 @@ exports.createPendingOrder = async (req, res) => {
 
   const pendingOrder = new PendingOrder({
     house: houseId,
-    renter: renterId,
+    tenant: tenantId,
     bidPrice,
   });
 
@@ -54,7 +54,7 @@ exports.updatePendingOrder = async (req, res) => {
       return res.status(404).json({ message: "Pending order not found" });
     }
 
-    if (pendingOrder.renter.toString() !== req.user._id.toString()) {
+    if (pendingOrder.tenant.toString() !== req.user._id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this order" });
@@ -78,7 +78,7 @@ exports.deletePendingOrder = async (req, res) => {
       return res.status(404).json({ message: "Pending order not found" });
     }
 
-    if (pendingOrder.renter.toString() !== req.user._id.toString()) {
+    if (pendingOrder.tenant.toString() !== req.user._id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this order" });
@@ -95,7 +95,7 @@ exports.getPendingOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const pendingOrder = await PendingOrder.findById(id).populate(
-      "house renter"
+      "house tenant"
     );
 
     if (!pendingOrder) {
@@ -113,7 +113,7 @@ exports.getAllPendingOrdersForLandlord = async (req, res) => {
     const { landlordId } = req.params;
     const pendingOrders = await PendingOrder.find({
       "house.landlord": landlordId,
-    }).populate("house renter");
+    }).populate("house tenant");
 
     res.status(200).json(pendingOrders);
   } catch (error) {
@@ -144,8 +144,8 @@ exports.acceptPendingOrder = async (req, res) => {
     // Cancel conflicting orders
     await cancelConflictingOrders(order);
 
-    // Notify the renter about the acceptance
-    notifyRenterOrderStatus(order.renter, "accepted");
+    // Notify the tenant about the acceptance
+    notifyTenantOrderStatus(order.tenant, "accepted");
 
     res.status(200).json(order);
   } catch (error) {
@@ -163,8 +163,8 @@ exports.rejectPendingOrder = async (req, res) => {
     order.status = "rejected";
     await order.save();
 
-    // Notify the renter about the rejection
-    notifyRenterOrderStatus(order.renter, "rejected");
+    // Notify the tenant about the rejection
+    notifyTenantOrderStatus(order.tenant, "rejected");
 
     res.status(200).json(order);
   } catch (error) {
@@ -184,8 +184,8 @@ exports.counterOfferPendingOrder = async (req, res) => {
     order.bidPrice = newBidPrice;
     await order.save();
 
-    // Notify the renter about the counter-offer
-    notifyRenterOrderStatus(order.renter, "counter-offered");
+    // Notify the tenant about the counter-offer
+    notifyTenantOrderStatus(order.tenant, "counter-offered");
 
     res.status(200).json(order);
   } catch (error) {
@@ -204,8 +204,8 @@ const cancelConflictingOrders = async (acceptedOrder) => {
   for (const order of conflictingOrders) {
     order.status = "rejected";
     await order.save();
-    notifyRenterOrderStatus(
-      order.renter,
+    notifyTenantOrderStatus(
+      order.tenant,
       "rejected due to another order acceptance"
     );
   }

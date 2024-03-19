@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const houseSchema = new mongoose.Schema(
   {
-    owner: {
+    landlord: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    broker: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     city: { type: String, required: true },
     subCity: { type: String, required: true },
     wereda: { type: String, required: true },
@@ -41,7 +42,6 @@ const houseSchema = new mongoose.Schema(
     comision: { type: Number, required: true, default: 0 },
     description: { type: String, required: true },
     photos: [{ type: String }],
-    active: { type: Boolean, required: true, default: true },
     status: {
       type: String,
       enum: ["available", "rented", "unavailable"],

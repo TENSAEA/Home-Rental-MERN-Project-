@@ -7,7 +7,7 @@ const pendingOrderSchema = new mongoose.Schema(
       ref: "House",
       required: true,
     },
-    renter: {
+    tenant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
