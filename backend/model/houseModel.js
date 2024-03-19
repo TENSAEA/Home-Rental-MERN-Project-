@@ -2,18 +2,46 @@ const mongoose = require("mongoose");
 
 const houseSchema = new mongoose.Schema(
   {
-    landlord: {
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    broker: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Optional, only if a broker is involved
-    location: { type: String, required: true },
-    type: { type: String, required: true },
-    category: { type: String, required: true },
+    city: { type: String, required: true },
+    subCity: { type: String, required: true },
+    wereda: { type: String, required: true },
+    specialLocation: { type: String, required: true },
+    type: {
+      type: String,
+      enum: [
+        "one-room",
+        "OneBedroom",
+        "TwoBedroom",
+        "ThreeBedroom",
+        "Studio",
+        "G+1",
+        "G+2",
+        "G+3",
+      ],
+      required: true,
+    },
+    category: {
+      type: String,
+      enum: [
+        "Villa",
+        "Apartment",
+        "Condominium",
+        "Service",
+        "Penthouse",
+        "others",
+      ],
+      required: true,
+    },
     price: { type: Number, required: true },
+    comision: { type: Number, required: true, default: 0 },
     description: { type: String, required: true },
-    photos: [{ type: String }], // URLs to images
+    photos: [{ type: String }],
+    active: { type: Boolean, required: true, default: true },
     status: {
       type: String,
       enum: ["available", "rented", "unavailable"],
@@ -24,7 +52,6 @@ const houseSchema = new mongoose.Schema(
       enum: ["pending", "approved", "declined"],
       default: "pending",
     },
-    // Add other relevant house details here
   },
   { timestamps: true }
 );

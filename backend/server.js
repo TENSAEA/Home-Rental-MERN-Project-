@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 5000;
 
 // Import routes
 // const userRoutes = require("./routes/userRoute");
-// const propertyRoutes = require("./routes/propertyRoute");
+const propertyRoutes = require("./routes/propertyRoute");
 // const reportRoutes = require("./routes/reportRoute.js");
 // const paymentRoutes = require("./routes/paymentRoute");
 // const indexRoutes = require("./routes/indexRoute");

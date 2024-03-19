@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const houseValidator = require("../middleware/houseValidator");
 const propertyController = require("./controllers/propertyController");
 
 // Add file upload endpoint using Multer
@@ -14,18 +14,27 @@ router.put(
 );
 
 // Endpoint for creating a new property listing
-router.post("/", propertyController.createProperty);
+router.get("/", propertyController.getProperty);
+
+router.get("/get-all-property", propertyController.getAllProperty);
+
+router.post(
+  "/create-property",
+  houseValidator,
+  propertyController.createProperty
+);
 
 // Endpoint for updating an existing property listing
-router.put("/:id", propertyController.updateProperty);
+router.put("/:id", houseValidator, propertyController.updateProperty);
 
 // Endpoint for deleting an existing property listing
-router.delete("/:id", propertyController.deleteProperty);
-
-// Endpoint for landlords/brokers to mark a house as unavailable
-router.put("/:id/mark-unavailable", propertyController.markHouseUnavailable);
+router.delete("/:id", houseValidator, propertyController.deleteProperty);
 
 // Endpoint for landlords/brokers to mark a house as available
-router.put("/:id/mark-available", propertyController.markHouseAvailable);
+router.put(
+  "/:id/aprove-status",
+  houseValidator,
+  propertyController.approvalStatusOfProperty
+);
 
 module.exports = router;
